@@ -81,8 +81,31 @@ def decode_xml(fname: str) -> dict:
         return ciphers_list
 
     script_element = script_element.findall('table')
+    ciphers_list = _process_tls_protocols(script_element)
 
-    for tls_protocol in script_element:
+    ciphers_list = dict(sorted(ciphers_list.items(), reverse=True))
+
+    topic: Any = xml_root.find(".//*[@key='least strength']")
+    if topic is not None:
+        ciphers_list["least strength"] = topic.text
+
+    return ciphers_list
+
+
+def _process_tls_protocols(tables: Any) -> dict:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        tables (Any) -- _description_
+
+    Returns:
+        dict -- _description_
+    """
+    ciphers_list: dict = {}
+
+    for tls_protocol in tables:
         protocol_name: Any = tls_protocol.attrib.get('key')
         ciphers_list[protocol_name] = []
 
@@ -99,12 +122,6 @@ def decode_xml(fname: str) -> dict:
 
             if protocol.attrib.get('key') == 'ciphers':
                 ciphers_list[protocol_name].append(_process_ciphers_table(protocol))
-
-    ciphers_list = dict(sorted(ciphers_list.items(), reverse=True))
-
-    topic: Any = xml_root.find(".//*[@key='least strength']")
-    if topic is not None:
-        ciphers_list["least strength"] = topic.text
 
     return ciphers_list
 

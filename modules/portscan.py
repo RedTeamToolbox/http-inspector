@@ -30,6 +30,7 @@ def port_scan() -> None:
 
     ip_list: list = _get_ips(configuration.url.hostname)
     all_ports_and_ips: list[tuple[str, int]] = list(itertools.product(ip_list, PORTSCAN_PORTS))
+    # TODO Shuffle these?
 
     default_threads: int = multiprocessing.cpu_count() * 5
     if default_threads > len(PORTSCAN_PORTS):
