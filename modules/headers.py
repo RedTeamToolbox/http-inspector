@@ -32,6 +32,8 @@ def fetch_headers() -> None:
     resp = requests.head(configuration.url.full_url, headers=REQUEST_HEADERS, timeout=configuration.timeout)
     headers: list[dict[str, str]] = [{"name": key.lower(), "value": value} for key, value in resp.headers.items()]
 
+    headers = sorted(headers, key=lambda d: d["name"])
+
     results.raw_headers = headers
     _check_headers()
     _add_documentation()
@@ -252,7 +254,7 @@ def _eval_referrer_policy(contents: str) -> Tuple[int, list]:
     ]:
         return EVAL_OK, []
 
-    return EVAL_WARN, [f"Unsafe contents: {contents}"]
+    return EVAL_WARN, [f"Unsafe or non-recommended: {contents}"]
 
 
 def _eval_version_info(contents: str) -> Tuple[int, list]:
