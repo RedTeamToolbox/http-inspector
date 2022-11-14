@@ -26,6 +26,8 @@ WARN: str = colorama.Fore.YELLOW
 ERROR: str = colorama.Fore.RED
 INFO: str = colorama.Fore.CYAN
 
+CERTIFICATE_TIME_FORMAT: str = "%Y-%m-%d %X"
+
 PORTSCAN_PORTS: list = [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 465, 587, 993, 995, 1723, 3306, 3389, 5900, 8080, 8443]
 
 REQUEST_HEADERS: dict[str, str] = {

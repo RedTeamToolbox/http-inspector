@@ -14,6 +14,7 @@ from typing import Any
 from cryptography.x509 import ocsp
 from OpenSSL import SSL, crypto
 
+from .constants import CERTIFICATE_TIME_FORMAT
 from .dns import get_records
 from .globals import configuration, results
 from .notify import warn
@@ -71,7 +72,7 @@ def get_certificates() -> list:
     cert_chain: list = []
 
     sock: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    osobj: SSL.Context = SSL.Context(SSL.TLS_METHOD)
+    osobj: SSL.Context = SSL.Context(SSL.TLSv1_2_METHOD)
     osobj.set_ocsp_client_callback(extract_ocsp_result)
 
     sock.connect((configuration.url.hostname, configuration.url.port))
@@ -162,11 +163,11 @@ def _get_certificate_info(cert, primary) -> dict:
 
     # Valid from
     valid_from: datetime = datetime.strptime(cert.get_notBefore().decode('ascii'), '%Y%m%d%H%M%SZ')
-    context['valid_from'] = valid_from.strftime('%Y-%m-%d %X')
+    context['valid_from'] = valid_from.strftime(CERTIFICATE_TIME_FORMAT)
 
     # Valid till
     valid_till: datetime = datetime.strptime(cert.get_notAfter().decode('ascii'), '%Y%m%d%H%M%SZ')
-    context['valid_till'] = valid_till.strftime('%Y-%m-%d %X')
+    context['valid_till'] = valid_till.strftime(CERTIFICATE_TIME_FORMAT)
 
     # Validity days
     context['validity_days'] = (valid_till - valid_from).days
@@ -176,7 +177,7 @@ def _get_certificate_info(cert, primary) -> dict:
     context['days_left'] = (valid_till - now).days
 
     # Valid days left
-    context['valid_days_to_expire'] = (datetime.strptime(context['valid_till'], '%Y-%m-%d %X') - datetime.now()).days
+    context['valid_days_to_expire'] = (datetime.strptime(context['valid_till'], CERTIFICATE_TIME_FORMAT) - datetime.now()).days
 
     context['pem_file'] = crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode()
     return context

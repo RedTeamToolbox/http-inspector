@@ -245,7 +245,7 @@ def _eval_version_info(contents: str) -> Tuple[int, list]:
         Tuple[int, list] -- _description_
     """
     # Poor guess whether the header value contain something that could be a server banner including version number
-    if len(contents) > 3 and re.match(".*[^0-9]+.*\\d.*", contents):
+    if len(contents) > 3 and re.match(".*\\d+.*\\d.*", contents):
         return EVAL_WARN, []
 
     return EVAL_OK, []
@@ -262,7 +262,7 @@ def _eval_sts(contents: str) -> Tuple[int, list[str]]:
     Returns:
         Tuple[int, list[str]] -- _description_
     """
-    if re.match("^max-age=[0-9]+\\s*(;|$)\\s*", contents.lower()):
+    if re.match("^max-age=\\d+\\s*(;|$)\\s*", contents.lower()):
         return EVAL_OK, []
 
     return EVAL_WARN, []
