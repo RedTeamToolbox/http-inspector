@@ -3,8 +3,7 @@ name: Codecov
 on:
   push:
     branches:
-      - master
-      - main
+      - '**'
     tags-ignore:
       - 'v*'
       - 'rc-*'
@@ -24,6 +23,9 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+    - name: Install required packages
+      run: |
+        pip install -r requirements.txt
     - name: Generate coverage report
       run: |
         pip install pytest
@@ -32,6 +34,7 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         env_vars: OS,PYTHON
         fail_ci_if_error: true
         files: ./coverage.xml
