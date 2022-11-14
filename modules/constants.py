@@ -45,6 +45,7 @@ EVAL_OK: int = 1
 HEADERS_LIST: list[str] = [
     "content-security-policy",
     "permissions-policy",
+    "pragma",
     "referrer-policy",
     "server",
     "strict-transport-security",
@@ -57,6 +58,7 @@ HEADERS_LIST: list[str] = [
 HEADERS_RECOMMENDED: dict[str, bool] = {
     "content-security-policy": True,
     "permissions-policy": True,
+    "pragma": False,
     "referrer-policy": True,
     "server": False,
     "strict-transport-security": True,
@@ -69,6 +71,7 @@ HEADERS_RECOMMENDED: dict[str, bool] = {
 EVAL_FUNCTIONS: dict[str, str] = {
     "content-security-policy": "_eval_csp",
     "permissions-policy": "_eval_permissions_policy",
+    "pragma": "_eval_pragma",
     "referrer-policy": "_eval_referrer_policy",
     "server": "_eval_version_info",
     "strict-transport-security": "_eval_sts",

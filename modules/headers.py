@@ -34,6 +34,7 @@ def fetch_headers() -> None:
 
     results.raw_headers = headers
     _check_headers()
+    _add_documentation()
 
 
 def _check_headers() -> None:
@@ -48,7 +49,6 @@ def _check_headers() -> None:
 
     for header in HEADERS_LIST:
         if any(d['name'] == header for d in results.raw_headers):
-
             if header in EVAL_FUNCTIONS:
                 eval_func: str = EVAL_FUNCTIONS[header]
             else:
@@ -70,11 +70,18 @@ def _check_headers() -> None:
                 'contents': header_str,
                 'notes': notes
             }
-
         else:
             warn = HEADERS_RECOMMENDED.get(header, False)
             security_headers[header] = {'defined': False, 'warn': warn, 'contents': None, 'notes': []}
 
+    results.security_headers = security_headers
+
+
+def _add_documentation() -> None:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
     for item in results.raw_headers:
         name: str = item['name']
         if name == "permissions-policy":
@@ -83,8 +90,6 @@ def _check_headers() -> None:
             name = "Content-Security-Policy/report-to"
 
         item.update({"documentation": f"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/{name}"})
-
-    results.security_headers = security_headers
 
 
 def _eval_csp(contents: str) -> Tuple[int, list[str]]:
@@ -181,6 +186,23 @@ def _eval_permissions_policy(contents: str) -> Tuple[int, list]:
 
     if pp_unsafe:
         return EVAL_WARN, notes
+
+    return EVAL_OK, []
+
+
+def _eval_pragma(contents: str) -> Tuple[int, list]:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
+    if contents is not None:
+        return EVAL_WARN, ["Deprecated: This feature is no longer recommended."]
 
     return EVAL_OK, []
 
