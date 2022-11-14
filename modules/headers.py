@@ -91,7 +91,10 @@ def _add_documentation() -> None:
         if name == "report-to":
             name = "Content-Security-Policy/report-to"
 
-        item.update({"documentation": f"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/{name}"})
+        if name.startswith("cf-"):
+            item.update({"documentation": "https://developers.cloudflare.com/fundamentals/get-started/reference/http-request-headers/"})
+        else:
+            item.update({"documentation": f"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/{name}"})
 
 
 def _eval_csp(contents: str) -> Tuple[int, list[str]]:
