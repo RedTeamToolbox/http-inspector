@@ -38,7 +38,18 @@ def get_cipher_suite() -> None:
 
 
 def _ssl_cipher_scan(target_ip, target_ports, xml_path) -> str:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        target_ip (_type_) -- _description_
+        target_ports (_type_) -- _description_
+        xml_path (_type_) -- _description_
+
+    Returns:
+        str -- _description_
+    """
     out_xml: str = os.path.join(xml_path, f'{target_ip}_ssl_ciphers.xml')
     nmap_cmd: str = f"nmap {target_ip} -p {target_ports} -n -Pn --script ssl-enum-ciphers -T4 -vv -oX {out_xml}"
     sub_args: list[str] = shlex.split(nmap_cmd)
@@ -49,7 +60,16 @@ def _ssl_cipher_scan(target_ip, target_ports, xml_path) -> str:
 
 
 def decode_xml(fname: str) -> dict:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        fname (str) -- _description_
+
+    Returns:
+        dict -- _description_
+    """
     # Cipher Risk Lists
     ciphers_list: dict = {}
 
@@ -90,7 +110,16 @@ def decode_xml(fname: str) -> dict:
 
 
 def _process_compressors(protocol: Any) -> dict[str, list]:
+    """Define a summary.
 
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        protocol (Any) -- _description_
+
+    Returns:
+        dict[str, list] -- _description_
+    """
     local_compressors: list = []
 
     for entry in protocol:
@@ -100,6 +129,16 @@ def _process_compressors(protocol: Any) -> dict[str, list]:
 
 
 def _process_warnings(protocol: Any) -> dict[str, list]:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        protocol (Any) -- _description_
+
+    Returns:
+        dict[str, list] -- _description_
+    """
     local_warnings: list = []
 
     for entry in protocol:
@@ -108,7 +147,17 @@ def _process_warnings(protocol: Any) -> dict[str, list]:
     return {"warnings": local_warnings}
 
 
-def _process_ciphers_table(protocol: Any) -> list:
+def _process_ciphers_table(protocol: Any) -> dict:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        protocol (Any) -- _description_
+
+    Returns:
+        list -- _description_
+    """
     local_ciphers = []
     name: str = "unknown"
     grade: str = "unknown"

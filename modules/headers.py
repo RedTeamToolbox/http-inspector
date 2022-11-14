@@ -17,7 +17,10 @@ from .globals import configuration, results
 
 
 def fetch_headers() -> None:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
     resp: requests.Response
     headers: list[dict[str, str]]
 
@@ -34,7 +37,10 @@ def fetch_headers() -> None:
 
 
 def _check_headers() -> None:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
     security_headers: dict = {}
     res: int
     notes: list
@@ -82,7 +88,16 @@ def _check_headers() -> None:
 
 
 def _eval_csp(contents: str) -> Tuple[int, list[str]]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list[str]] -- _description_
+    """
     unsafe_rules: dict[str, list[str]] = {
         "script-src": ["*", "'unsafe-eval'", "data:", "'unsafe-inline'"],
         "style-src": ["*", "'unsafe-inline'"],
@@ -119,7 +134,16 @@ def _eval_csp(contents: str) -> Tuple[int, list[str]]:
 
 
 def _csp_parser(contents: str) -> dict:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        dict -- _description_
+    """
     csp: dict = {}
 
     directives: list[str] = contents.split(";")
@@ -133,7 +157,16 @@ def _csp_parser(contents: str) -> dict:
 
 
 def _eval_permissions_policy(contents: str) -> Tuple[int, list]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
     # Configuring Permission-Policy is very case-specific and it's difficult to define a particular recommendation.
     # We apply here a logic, that access to privacy-sensitive features and payments API should be restricted.
 
@@ -153,7 +186,16 @@ def _eval_permissions_policy(contents: str) -> Tuple[int, list]:
 
 
 def _permissions_policy_parser(contents: str) -> dict:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        dict -- _description_
+    """
     policies: list[str] = contents.split(",")
     retval: dict = {}
 
@@ -168,7 +210,16 @@ def _permissions_policy_parser(contents: str) -> dict:
 
 
 def _eval_referrer_policy(contents: str) -> Tuple[int, list]:
-    """docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
     if contents.lower().strip() in [
         'no-referrer',
         'no-referrer-when-downgrade',
@@ -183,7 +234,16 @@ def _eval_referrer_policy(contents: str) -> Tuple[int, list]:
 
 
 def _eval_version_info(contents: str) -> Tuple[int, list]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
     # Poor guess whether the header value contain something that could be a server banner including version number
     if len(contents) > 3 and re.match(".*[^0-9]+.*\\d.*", contents):
         return EVAL_WARN, []
@@ -192,7 +252,16 @@ def _eval_version_info(contents: str) -> Tuple[int, list]:
 
 
 def _eval_sts(contents: str) -> Tuple[int, list[str]]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list[str]] -- _description_
+    """
     if re.match("^max-age=[0-9]+\\s*(;|$)\\s*", contents.lower()):
         return EVAL_OK, []
 
@@ -200,7 +269,16 @@ def _eval_sts(contents: str) -> Tuple[int, list[str]]:
 
 
 def _eval_content_type_options(contents: str) -> Tuple[int, list]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
     if contents.lower() == 'nosniff':
         return EVAL_OK, []
 
@@ -208,7 +286,16 @@ def _eval_content_type_options(contents: str) -> Tuple[int, list]:
 
 
 def _eval_x_frame_options(contents: str) -> Tuple[int, list[str]]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list[str]] -- _description_
+    """
     if contents.lower() in ['deny', 'sameorigin']:
         return EVAL_OK, []
 
@@ -216,7 +303,16 @@ def _eval_x_frame_options(contents: str) -> Tuple[int, list[str]]:
 
 
 def _eval_x_xss_protection(contents: str) -> Tuple[int, list]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        contents (str) -- _description_
+
+    Returns:
+        Tuple[int, list] -- _description_
+    """
     # This header is deprecated but still used quite a lot
     #
     # value '1' is dangerous because it can be used to block legit site features. If this header is defined, either

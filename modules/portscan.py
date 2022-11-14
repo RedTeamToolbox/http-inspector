@@ -22,7 +22,10 @@ from .ordering import multikeysort
 
 
 def port_scan() -> None:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
     scan_results: list[dict] = []
 
     ip_list: list = _get_ips(configuration.url.hostname)
@@ -48,7 +51,16 @@ def port_scan() -> None:
 
 
 def _is_ip_address(target: str) -> Any:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        target (str) -- _description_
+
+    Returns:
+        Any -- _description_
+    """
     try:
         ip_address: ipaddress.IPv4Address | ipaddress.IPv6Address = ipaddress.ip_address(target)
         status: bool = bool(isinstance(ip_address, (ipaddress.IPv4Address, ipaddress.IPv6Address)))
@@ -57,9 +69,17 @@ def _is_ip_address(target: str) -> Any:
     return status
 
 
-# TODO: IPV6
 def _get_ips(target: str) -> list[str]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        target (str) -- _description_
+
+    Returns:
+        list[str] -- _description_
+    """
     ip_list: list[str] = []
 
     if _is_ip_address(target) is False:
@@ -83,7 +103,9 @@ def _scan_target_port(target: str, port: int, socket_timeout: int = 3) -> dict[s
     Arguments:
         target (str) -- _description_
         port (int) -- _description_
-        delay_time (int) -- _description_
+
+    Keyword Arguments:
+        socket_timeout (int) -- _description_ (default: 3)
 
     Returns:
         dict[str, Any] -- _description_
@@ -115,8 +137,3 @@ def _scan_target_port(target: str, port: int, socket_timeout: int = 3) -> dict[s
         "status_string": status_string,
         "ipnum": int(ipaddress.ip_address(target))
     }
-
-
-#
-# Show open or all ?
-#

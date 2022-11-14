@@ -22,8 +22,9 @@ def create_configuration_from_arguments(args: argparse.Namespace) -> None:
     Arguments:
         args (argparse.Namespace) -- _description_
 
-    Returns:
-        SimpleNamespace -- _description_
+    Raises:
+        InvalidTargetURL: _description_
+        InvalidTargetURL: _description_
     """
     configuration.verbose = args.verbose
     configuration.debug = args.debug

@@ -65,12 +65,8 @@ def get_certificates() -> list:
 
     This is the extended summary from the template and needs to be replaced.
 
-    Arguments:
-        host (str) -- _description_
-        port (int) -- _description_
-
     Returns:
-        _type_ -- _description_
+        list -- _description_
     """
     cert_chain: list = []
 
@@ -95,7 +91,6 @@ def get_certificates() -> list:
         oscon.shutdown()
     except SSL.Error:
         warn("Unable to retrieve SSL certificates - check your url and rerun if this is unexpected")
-        return cert_chain
 
     return cert_chain
 
@@ -104,6 +99,9 @@ def process_certificates(certificates: list) -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        certificates (list) -- _description_
     """
     decoded_certificates: list = []
     primary: bool = True
@@ -154,13 +152,7 @@ def _get_certificate_info(cert, primary) -> dict:
     context['issuer_cn'] = cert.get_issuer().commonName
     context['cert_sn'] = str(cert.get_serial_number())
     context['cert_sn_hex'] = hex(cert.get_serial_number()).rstrip('L').lstrip('0x')
-    # context['cert_md5'] = cert.digest('md5').decode().replace(":", "").lower()
-    # context['cert_sha1'] = cert.digest('sha1').decode().replace(":", "").lower()
-    # context['cert_sha224'] = cert.digest('sha224').decode().replace(":", "").lower()
     context['cert_sha256'] = cert.digest('sha256').decode().replace(":", "").lower()
-    # context['cert_sha384'] = cert.digest('sha384').decode().replace(":", "").lower()
-    # context['cert_sha512'] = cert.digest('sha512').decode().replace(":", "").lower()
-
     context['cert_alg'] = cert.get_signature_algorithm().decode()
     context['key_size'] = cert.get_pubkey().bits()
     context['cert_ver'] = cert.get_version()
@@ -191,7 +183,16 @@ def _get_certificate_info(cert, primary) -> dict:
 
 
 def _get_cert_sans(x509cert) -> list[str]:
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        x509cert (_type_) -- _description_
+
+    Returns:
+        list[str] -- _description_
+    """
     san: str = ''
     san_list: list[str] = []
 

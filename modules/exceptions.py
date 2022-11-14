@@ -24,7 +24,7 @@ class InvalidParameters(HTTPInspectorException):
     This is the extended summary from the template and needs to be replaced.
 
     Arguments:
-        PortScannerException (_type_) -- _description_
+        HTTPInspectorException (_type_) -- _description_
     """
 
 
@@ -34,7 +34,7 @@ class InvalidTargetURL(HTTPInspectorException):
     This is the extended summary from the template and needs to be replaced.
 
     Arguments:
-        PortScannerException (_type_) -- _description_
+        HTTPInspectorException (_type_) -- _description_
     """
 
 
@@ -44,21 +44,45 @@ class CertificateError(HTTPInspectorException):
     This is the extended summary from the template and needs to be replaced.
 
     Arguments:
-        PortScannerException (_type_) -- _description_
+        HTTPInspectorException (_type_) -- _description_
     """
 
 
 class InvalidResponse(HTTPInspectorException):
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        HTTPInspectorException (_type_) -- _description_
+    """
 
 
 class UnableToConnect(HTTPInspectorException):
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        HTTPInspectorException (_type_) -- _description_
+    """
 
 
 class NoHeaders(HTTPInspectorException):
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        HTTPInspectorException (_type_) -- _description_
+    """
 
 
 class NoEvalFunction(HTTPInspectorException):
-    """Docs."""
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        HTTPInspectorException (_type_) -- _description_
+    """

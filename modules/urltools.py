@@ -79,11 +79,8 @@ def follow_redirects(url: str) -> list:
 
     Arguments:
         url (str) -- _description_
-        configuration (SimpleNamespace) -- _description_
 
     Raises:
-        InvalidTargetURL: _description_
-        InvalidTargetURL: _description_
         InvalidTargetURL: _description_
 
     Returns:

@@ -66,6 +66,9 @@ def _add_optional_parameters(parser: argparse.ArgumentParser) -> None:
 
     Arguments:
         parser (argparse.ArgumentParser) -- _description_
+
+    Returns:
+        _type_ -- _description_
     """
     required: argparse._ArgumentGroup = parser.add_argument_group(
         title="optional arguments",
@@ -109,10 +112,6 @@ def process_command_line_arguments() -> argparse.Namespace:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
-
-    Raises:
-        InvalidParameters: _description_
-        InvalidParameters: _description_
 
     Returns:
         argparse.Namespace -- _description_
