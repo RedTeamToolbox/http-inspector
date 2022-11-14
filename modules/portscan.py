@@ -13,7 +13,6 @@ import multiprocessing
 import socket
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from ipaddress import IPv4Address, IPv6Address
 from typing import Any
 
 from .constants import PORTSCAN_PORTS
@@ -51,7 +50,7 @@ def port_scan() -> None:
 def _is_ip_address(target: str) -> Any:
     """Docs."""
     try:
-        ip_address: IPv4Address | IPv6Address = ipaddress.ip_address(target)
+        ip_address: ipaddress.IPv4Address | ipaddress.IPv6Address = ipaddress.ip_address(target)
         status: bool = bool(isinstance(ip_address, (ipaddress.IPv4Address, ipaddress.IPv6Address)))
     except ValueError:
         status = False
@@ -92,7 +91,7 @@ def _scan_target_port(target: str, port: int, socket_timeout: int = 3) -> dict[s
     status: bool = False
     af_type: int = socket.AF_INET
 
-    if isinstance(ipaddress.ip_address(target), IPv6Address) is True:
+    if isinstance(ipaddress.ip_address(target), ipaddress.IPv6Address) is True:
         af_type = socket.AF_INET6
 
     with socket.socket(af_type, socket.SOCK_STREAM) as sock:

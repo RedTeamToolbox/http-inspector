@@ -15,8 +15,6 @@ from urllib.parse import urlparse, ParseResult
 import requests
 import tldextract
 
-from requests import Response, Session
-
 from .constants import DEFAULT_URL_SCHEME, REQUEST_HEADERS
 from .exceptions import InvalidTargetURL
 from .globals import configuration
@@ -92,13 +90,13 @@ def follow_redirects(url: str) -> list:
         list -- _description_
     """
     history: list = []
-    session: Session = requests.Session()
+    session: requests.Session = requests.Session()
 
     if configuration.max_redirects:
         session.max_redirects = configuration.max_redirects
 
     try:
-        resp: Response = session.get(
+        resp: requests.Response = session.get(
             url, headers=REQUEST_HEADERS,
             verify=configuration.verify_ssl,
             allow_redirects=configuration.allow_redirects,
