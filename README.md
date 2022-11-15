@@ -26,5 +26,39 @@
 
 ## Overview
 
+```shell
+usage: http-inspector.py [-h] [-d] [-v] [-4] [-6] [-A] [-s] [-u URL] [-m MAX_REDIRECTS] [-n] [-t TIMEOUT]
+
+Check for open port(s) on target host(s)
+
+optional flags:
+  Description
+
+  -h, --help            show this help message and exit
+  -d, --debug           Very noisy (default: False)
+  -v, --verbose         Verbose output - show scan results as they come in (default: False)
+  -4, --ipv4-only       Scan IPv4 addresses only (default: False)
+  -6, --ipv6-only       Scan IPv6 addresses only (default: False)
+  -A, --all-results     Show or save all results (default is to list open ports only) (default: False)
+  -s, --shuffle         Randomise the port scanning order (default: False)
+
+required arguments:
+  stuff
+
+  -u URL, --url URL     The url you want to check (default: None)
+
+optional arguments:
+  stuff
+
+  -m MAX_REDIRECTS, --max-redirects MAX_REDIRECTS
+                        Max redirects, set 0 to disable (default: 2)
+  -n, --no-check-certificate
+                        Do not verify TLS chain (default: False)
+  -t TIMEOUT, --timeout TIMEOUT
+                        Timeout to use when making web requests (default: 5)
+
+For detailed documentation please refer to: https://github.com/OffSecToolbox/http-inspector
+```
+
 <br />
 <p align="right"><a href="https://wolfsoftware.com/"><img src="https://img.shields.io/badge/Created%20by%20Wolf%20Software-blue?style=for-the-badge" /></a></p>
