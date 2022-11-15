@@ -9,7 +9,7 @@ on:
       - 'rc-*'
 
 env:
-  SLACK_NOTIFY: false
+  SLACK_NOTIFY: true
 
 jobs:
   code-coverage:
