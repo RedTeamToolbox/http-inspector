@@ -17,7 +17,7 @@ from typing import Any
 
 from .constants import PORTSCAN_PORTS
 from .dns import get_records
-from .globals import configuration, results
+from .globals import global_configuration, global_results
 from .ordering import multikeysort, shuffled
 
 
@@ -28,9 +28,9 @@ def port_scan() -> None:
     """
     scan_results: list[dict] = []
 
-    ip_list: list = _get_ips(configuration.url.hostname)
+    ip_list: list = _get_ips(global_configuration.url.hostname)
     all_ports_and_ips: list[tuple[str, int]] = list(itertools.product(ip_list, PORTSCAN_PORTS))
-    if configuration.shuffle is True:
+    if global_configuration.shuffle is True:
         all_ports_and_ips = shuffled(all_ports_and_ips)
 
     with ThreadPoolExecutor(max_workers=_calculate_default_threads()) as executor:
@@ -41,7 +41,7 @@ def port_scan() -> None:
             if thread_results:
                 scan_results.append(thread_results)
 
-    results.port_scan = _sort_and_clean(scan_results)
+    global_results.port_scan = _sort_and_clean(scan_results)
 
 
 def _sort_and_clean(scan_results: list) -> list:
@@ -55,7 +55,7 @@ def _sort_and_clean(scan_results: list) -> list:
     Returns:
         list -- _description_
     """
-    if configuration.all_results is False:
+    if global_configuration.all_results is False:
         scan_results: list[dict] = [i for i in scan_results if i['status'] is True]
 
     scan_results = multikeysort(scan_results, ['target', 'ipnum', 'port'])
@@ -115,9 +115,9 @@ def _get_ips(target: str) -> list[str]:
     ip_list: list[str] = []
 
     if _is_ip_address(target) is False:
-        if configuration.ipv4_only is True:
+        if global_configuration.ipv4_only is True:
             ip_list = sorted(get_records(target, "A"))
-        elif configuration.ipv6_only is True:
+        elif global_configuration.ipv6_only is True:
             ip_list = sorted(get_records(target, "AAAA"))
         else:
             ip_list = sorted(get_records(target, "A")) + sorted(get_records(target, "AAAA"))

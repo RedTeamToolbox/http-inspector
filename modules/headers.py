@@ -13,7 +13,7 @@ from typing import Tuple
 import requests
 
 from .constants import EVAL_FUNCTIONS, EVAL_OK, EVAL_WARN, HEADERS_LIST, HEADERS_RECOMMENDED, REQUEST_HEADERS, RESTRICTED_PRIVACY_POLICY_FEATURES, UNSAFE_RULES
-from .globals import configuration, results
+from .globals import global_configuration, global_results
 
 
 def fetch_headers() -> None:
@@ -29,12 +29,12 @@ def fetch_headers() -> None:
     # without_headers: list[dict[str, str]] = [{"name": key.lower(), "value": value} for key, value in resp.headers.items()]
 
     # With sent headers
-    resp = requests.head(configuration.url.full_url, headers=REQUEST_HEADERS, timeout=configuration.timeout)
+    resp = requests.head(global_configuration.url.full_url, headers=REQUEST_HEADERS, timeout=global_configuration.timeout)
     headers: list[dict[str, str]] = [{"name": key.lower(), "value": value} for key, value in resp.headers.items()]
 
     headers = sorted(headers, key=lambda d: d["name"])
 
-    results.raw_headers = headers
+    global_results.raw_headers = headers
     _check_headers()
     _add_documentation()
 
@@ -50,7 +50,7 @@ def _check_headers() -> None:
     warn: bool
 
     for header in HEADERS_LIST:
-        if any(d['name'] == header for d in results.raw_headers):
+        if any(d['name'] == header for d in global_results.raw_headers):
             if header in EVAL_FUNCTIONS:
                 eval_func: str = EVAL_FUNCTIONS[header]
             else:
@@ -58,7 +58,7 @@ def _check_headers() -> None:
                 security_headers[header] = {'defined': True, 'warn': warn, 'contents': None, 'notes': ["Eval function is missing"]}
                 continue
 
-            header_str: str = ''.join([d['value'] for d in results.raw_headers if d['name'] == header])
+            header_str: str = ''.join([d['value'] for d in global_results.raw_headers if d['name'] == header])
             try:
                 res, notes = globals()[eval_func](header_str)
             except KeyError:
@@ -76,7 +76,7 @@ def _check_headers() -> None:
             warn = HEADERS_RECOMMENDED.get(header, False)
             security_headers[header] = {'defined': False, 'warn': warn, 'contents': None, 'notes': []}
 
-    results.security_headers = security_headers
+    global_results.security_headers = security_headers
 
 
 def _add_documentation() -> None:
@@ -84,7 +84,7 @@ def _add_documentation() -> None:
 
     This is the extended summary from the template and needs to be replaced.
     """
-    for item in results.raw_headers:
+    for item in global_results.raw_headers:
         name: str = item['name']
         if name == "permissions-policy":
             name = "feature-policy"

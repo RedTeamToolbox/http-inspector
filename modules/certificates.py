@@ -16,7 +16,7 @@ from OpenSSL import SSL, crypto
 
 from .constants import CERTIFICATE_TIME_FORMAT
 from .dns import get_records
-from .globals import configuration, results
+from .globals import global_configuration, global_results
 from .notify import warn
 from .utils import remove_prefix
 
@@ -35,11 +35,11 @@ def get_certificates() -> list:
     osobj: SSL.Context = SSL.Context(SSL.TLSv1_2_METHOD)
     osobj.set_ocsp_client_callback(_extract_ocsp_result)
 
-    sock.connect((configuration.url.hostname, configuration.url.port))
+    sock.connect((global_configuration.url.hostname, global_configuration.url.port))
 
     try:
         oscon: SSL.Connection = SSL.Connection(osobj, sock)
-        oscon.set_tlsext_host_name(configuration.url.hostname.encode())
+        oscon.set_tlsext_host_name(global_configuration.url.hostname.encode())
         oscon.request_ocsp()
         oscon.set_connect_state()
         oscon.do_handshake()
@@ -69,12 +69,12 @@ def process_certificates(certificates: list) -> None:
     for cert in certificates:
         details: dict = _get_certificate_info(cert, primary)
         if primary:
-            details['revocation'] = results.ocsp_message
-            del results.ocsp_message
+            details['revocation'] = global_results.ocsp_message
+            del global_results.ocsp_message
         decoded_certificates.append(details)
         primary = False
 
-    results.ssl_certs = decoded_certificates
+    global_results.ssl_certs = decoded_certificates
 
 
 def _extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
@@ -104,14 +104,14 @@ def _extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
             # UNAUTHORIZED = 6
             ocsp_response = str(ocsp_response.response_status)
             ocsp_response = ocsp_response.split(".")
-            results.ocsp_message = f"OCSP Request Error: {ocsp_response[1]}"
+            global_results.ocsp_message = f"OCSP Request Error: {ocsp_response[1]}"
 
         certificate_status: str = str(ocsp_response.certificate_status)
         certificate_status = certificate_status.split(".")
-        results.ocsp_message = f"{certificate_status[1]}"
+        global_results.ocsp_message = f"{certificate_status[1]}"
 
     except ValueError as err:
-        results.ocsp_message = str(err)
+        global_results.ocsp_message = str(err)
 
     # Always return True otherwise we cant retrieve and download the certs
     return True
@@ -134,10 +134,10 @@ def _get_certificate_info(cert, primary) -> dict:
     cert_subject: Any = cert.get_subject()
 
     if primary:
-        context['host'] = configuration.url.hostname
-        caa: list[str] = get_records(configuration.url.hostname, 'CAA')
+        context['host'] = global_configuration.url.hostname
+        caa: list[str] = get_records(global_configuration.url.hostname, 'CAA')
         if not caa:
-            caa = get_records(configuration.url.domain, 'CAA')
+            caa = get_records(global_configuration.url.domain, 'CAA')
             if caa:
                 context['CAA'] = 'Domain Level: ' + ', '.join(caa)
             else:

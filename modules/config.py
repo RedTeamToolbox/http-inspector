@@ -10,7 +10,7 @@ import argparse
 import socket
 
 from .exceptions import InvalidTargetURL
-from .globals import configuration, results
+from .globals import global_configuration, global_results
 from .urltools import follow_redirects, url_parser
 
 
@@ -26,36 +26,37 @@ def create_configuration_from_arguments(args: argparse.Namespace) -> None:
         InvalidTargetURL: _description_
         InvalidTargetURL: _description_
     """
-    configuration.verbose = args.verbose
-    configuration.debug = args.debug
-    configuration.ipv4_only = args.ipv4_only
-    configuration.ipv6_only = args.ipv6_only
-    configuration.all_results = args.all_results
-    configuration.shuffle = args.shuffle
-    configuration.max_redirects = args.max_redirects
-    configuration.allow_redirects = bool(args.max_redirects)
-    configuration.verify_ssl = not bool(args.no_check_certificate)
-    configuration.timeout = args.timeout
+    global_configuration.verbose = args.verbose
+    global_configuration.debug = args.debug
+    global_configuration.ipv4_only = args.ipv4_only
+    global_configuration.ipv6_only = args.ipv6_only
+    global_configuration.all_results = args.all_results
+    global_configuration.shuffle = args.shuffle
+    global_configuration.max_redirects = args.max_redirects
+    global_configuration.allow_redirects = bool(args.max_redirects)
+    global_configuration.verify_ssl = not bool(args.no_check_certificate)
+    global_configuration.timeout = args.timeout
 
     # Parse the supplied url
-    configuration.origin = url_parser(args.url)
+    global_configuration.origin = url_parser(args.url)
 
     # Check the url host actually exists
     try:
-        socket.gethostbyname(configuration.origin.hostname)
+        socket.gethostbyname(global_configuration.origin.hostname)
     except socket.gaierror as err:
         raise InvalidTargetURL("Unable to lookup address for URL") from err
 
     # Follow any redirects
-    configuration.redirect_history = follow_redirects(configuration.origin.full_url)
+    global_configuration.redirect_history = follow_redirects(global_configuration.origin.full_url)
 
     # Parse the final url
-    configuration.url = url_parser(configuration.redirect_history[-1]['url'])
+    global_configuration.url = url_parser(global_configuration.redirect_history[-1]['url'])
 
     # This should never fail as we have followed redirects to get here
     try:
-        socket.gethostbyname(configuration.url.hostname)
+        socket.gethostbyname(global_configuration.url.hostname)
     except socket.gaierror as err:
         raise InvalidTargetURL("Unable to lookup address for URL") from err
 
-    results.url = configuration.url
+    # Keep the details in json
+    global_results.url = global_configuration.url

@@ -16,7 +16,7 @@ from typing import Any
 
 from defusedxml import ElementTree
 
-from .globals import configuration, results
+from .globals import global_configuration, global_results
 from .notify import warn
 
 
@@ -28,13 +28,13 @@ def get_cipher_suite() -> None:
     which_nmap: str | None = shutil.which("nmap")
     if which_nmap is None:
         warn("nmap is not installed - cipher suite will be empty")
-        results.cipher_suite = []
+        global_results.cipher_suite = []
         return
 
-    fname: str = _ssl_cipher_scan(configuration.url.hostname, configuration.url.port, os.getcwd())
+    fname: str = _ssl_cipher_scan(global_configuration.url.hostname, global_configuration.url.port, os.getcwd())
     ciphers: dict = decode_xml(fname)
     os.remove(fname)
-    results.cipher_suite = ciphers
+    global_results.cipher_suite = ciphers
 
 
 def _ssl_cipher_scan(target_ip, target_ports, xml_path) -> str:

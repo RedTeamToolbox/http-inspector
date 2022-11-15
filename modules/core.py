@@ -12,7 +12,7 @@ import json
 from .certificates import get_certificates, process_certificates
 from .ciphers import get_cipher_suite
 from .config import create_configuration_from_arguments
-from .globals import results
+from .globals import global_results
 from .headers import fetch_headers
 from .portscan import port_scan
 
@@ -38,5 +38,4 @@ def run_inspector(args: argparse.Namespace) -> None:
 
     port_scan()
 
-    print(json.dumps(results.port_scan, default=str, indent=4))
-    print(json.dumps(results.security_headers, default=str, indent=4))
+    print(json.dumps(global_results.__dict__, default=str, indent=4))

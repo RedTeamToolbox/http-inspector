@@ -13,5 +13,5 @@ from secrets import SystemRandom
 
 secrets_generator: SystemRandom = SystemRandom()
 
-configuration: SimpleNamespace = SimpleNamespace()
-results: SimpleNamespace = SimpleNamespace()
+global_configuration: SimpleNamespace = SimpleNamespace()
+global_results: SimpleNamespace = SimpleNamespace()

@@ -17,7 +17,7 @@ import tldextract
 
 from .constants import DEFAULT_URL_SCHEME, REQUEST_HEADERS
 from .exceptions import InvalidTargetURL
-from .globals import configuration
+from .globals import global_configuration
 
 
 def url_parser(url: str) -> SimpleNamespace:
@@ -89,15 +89,15 @@ def follow_redirects(url: str) -> list:
     history: list = []
     session: requests.Session = requests.Session()
 
-    if configuration.max_redirects:
-        session.max_redirects = configuration.max_redirects
+    if global_configuration.max_redirects:
+        session.max_redirects = global_configuration.max_redirects
 
     try:
         resp: requests.Response = session.get(
             url, headers=REQUEST_HEADERS,
-            verify=configuration.verify_ssl,
-            allow_redirects=configuration.allow_redirects,
-            timeout=configuration.timeout
+            verify=global_configuration.verify_ssl,
+            allow_redirects=global_configuration.allow_redirects,
+            timeout=global_configuration.timeout
         )
         resp.raise_for_status()
     except requests.exceptions.TooManyRedirects as err:
