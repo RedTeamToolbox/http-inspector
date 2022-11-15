@@ -31,6 +31,7 @@ def create_configuration_from_arguments(args: argparse.Namespace) -> None:
     configuration.ipv4_only = args.ipv4_only
     configuration.ipv6_only = args.ipv6_only
     configuration.all_results = args.all_results
+    configuration.shuffle = args.shuffle
     configuration.max_redirects = args.max_redirects
     configuration.allow_redirects = bool(args.max_redirects)
     configuration.verify_ssl = not bool(args.no_check_certificate)
@@ -41,7 +42,7 @@ def create_configuration_from_arguments(args: argparse.Namespace) -> None:
 
     # Check the url host actually exists
     try:
-        socket.gethostbyname(configuration.origin.hostname)
+        print(socket.gethostbyname(configuration.origin.hostname))
     except socket.gaierror as err:
         raise InvalidTargetURL("Unable to lookup address for URL") from err
 

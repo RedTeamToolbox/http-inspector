@@ -40,6 +40,9 @@ def _add_flags_to_parser(parser: argparse.ArgumentParser) -> None:
     flags.add_argument("-A", "--all-results",
                        action="store_true", default=False,
                        help="Show or save all results (default is to list open ports only)")
+    flags.add_argument("-s", "--shuffle",
+                       action="store_true", default=False,
+                       help="Randomise the port scanning order")
 
 
 def _add_required_parameters(parser: argparse.ArgumentParser) -> None:

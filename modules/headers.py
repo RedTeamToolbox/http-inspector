@@ -12,7 +12,7 @@ from typing import Tuple
 
 import requests
 
-from .constants import EVAL_FUNCTIONS, EVAL_OK, EVAL_WARN, HEADERS_LIST, HEADERS_RECOMMENDED, REQUEST_HEADERS, RESTRICTED_PRIVACY_POLICY_FEATURES
+from .constants import EVAL_FUNCTIONS, EVAL_OK, EVAL_WARN, HEADERS_LIST, HEADERS_RECOMMENDED, REQUEST_HEADERS, RESTRICTED_PRIVACY_POLICY_FEATURES, UNSAFE_RULES
 from .globals import configuration, results
 
 
@@ -108,19 +108,12 @@ def _eval_csp(contents: str) -> Tuple[int, list[str]]:
     Returns:
         Tuple[int, list[str]] -- _description_
     """
-    unsafe_rules: dict[str, list[str]] = {
-        "script-src": ["*", "'unsafe-eval'", "data:", "'unsafe-inline'"],
-        "style-src": ["*", "'unsafe-inline'"],
-        "frame-ancestors": ["*"],
-        "form-action": ["*"],
-        "object-src": ["*"],
-    }
     csp_unsafe: bool = False
     csp_notes: list = []
 
     csp_parsed: dict = _csp_parser(contents)
 
-    for rule, rule_list in unsafe_rules.items():
+    for rule, rule_list in UNSAFE_RULES.items():
         if rule not in csp_parsed:
             if '-src' in rule and 'default-src' in csp_parsed:
                 # fallback to default-src

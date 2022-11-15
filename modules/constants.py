@@ -98,3 +98,11 @@ RESTRICTED_PRIVACY_POLICY_FEATURES: list[str] = [
     'usb',
     'xr-spatial-tracking'
 ]
+
+UNSAFE_RULES: dict[str, list[str]] = {
+    "script-src": ["*", "'unsafe-eval'", "data:", "'unsafe-inline'"],
+    "style-src": ["*", "'unsafe-inline'"],
+    "frame-ancestors": ["*"],
+    "form-action": ["*"],
+    "object-src": ["*"],
+}

@@ -18,7 +18,7 @@ from typing import Any
 from .constants import PORTSCAN_PORTS
 from .dns import get_records
 from .globals import configuration, results
-from .ordering import multikeysort
+from .ordering import multikeysort, shuffled
 
 
 def port_scan() -> None:
@@ -30,13 +30,10 @@ def port_scan() -> None:
 
     ip_list: list = _get_ips(configuration.url.hostname)
     all_ports_and_ips: list[tuple[str, int]] = list(itertools.product(ip_list, PORTSCAN_PORTS))
-    # TODO Shuffle these?
+    if configuration.shuffle is True:
+        all_ports_and_ips = shuffled(all_ports_and_ips)
 
-    default_threads: int = multiprocessing.cpu_count() * 5
-    if default_threads > len(PORTSCAN_PORTS):
-        default_threads = len(PORTSCAN_PORTS)
-
-    with ThreadPoolExecutor(max_workers=default_threads) as executor:
+    with ThreadPoolExecutor(max_workers=_calculate_default_threads()) as executor:
         futures: list = [executor.submit(_scan_target_port, target[0], target[1], 3) for target in all_ports_and_ips]
 
         for future in as_completed(futures):
@@ -44,11 +41,45 @@ def port_scan() -> None:
             if thread_results:
                 scan_results.append(thread_results)
 
+    results.port_scan = _sort_and_clean(scan_results)
+
+
+def _sort_and_clean(scan_results: list) -> list:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        scan_results (list) -- _description_
+
+    Returns:
+        list -- _description_
+    """
     if configuration.all_results is False:
         scan_results: list[dict] = [i for i in scan_results if i['status'] is True]
 
     scan_results = multikeysort(scan_results, ['target', 'ipnum', 'port'])
-    results.port_scan = scan_results
+
+    for item in scan_results:
+        del item["ipnum"]
+
+    return scan_results
+
+
+def _calculate_default_threads() -> int:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Returns:
+        int -- _description_
+    """
+    default_threads: int = multiprocessing.cpu_count() * 5
+
+    if default_threads > len(PORTSCAN_PORTS):
+        default_threads = len(PORTSCAN_PORTS)
+
+    return default_threads
 
 
 def _is_ip_address(target: str) -> Any:
