@@ -9,6 +9,9 @@
     <a href="https://github.com/OffSecToolbox/http-inspector/actions/workflows/cicd-pipeline-custom.yml">
         <img src="https://img.shields.io/github/workflow/status/OffSecToolbox/http-inspector/CICD%20Pipeline%20(Custom)/master?label=custom%20pipeline&style=for-the-badge" alt="Github Build Status" />
     </a>
+    <a href="https://codecov.io/gh/OffSecToolbox/http-inspector">
+        <img src="https://img.shields.io/codecov/c/gh/OffSecToolbox/http-inspector?label=code%20coverage&style=for-the-badge" alt="code coverage" />
+    </a>
     <br />
     <a href="https://github.com/OffSecToolbox/http-inspector/blob/master/.github/CODE_OF_CONDUCT.md">
         <img src="https://img.shields.io/badge/Code%20of%20Conduct-blue?style=for-the-badge" />
