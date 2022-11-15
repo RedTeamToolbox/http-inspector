@@ -3,7 +3,7 @@ name: GitGuardian scan
 on: [push, pull_request]
 
 env:
-  SLACK_NOTIFY: true
+  SLACK_NOTIFY: false
 
 jobs:
   scanning:

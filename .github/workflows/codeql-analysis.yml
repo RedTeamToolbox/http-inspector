@@ -10,7 +10,7 @@ on:
     - cron: '39 5 * * 1'
 
 env:
-  SLACK_NOTIFY: true
+  SLACK_NOTIFY: false
 
 jobs:
   analyze:
