@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  SLACK_NOTIFY: false
+  SLACK_NOTIFY: true
 
 jobs:
 #
