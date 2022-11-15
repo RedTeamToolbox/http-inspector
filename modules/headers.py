@@ -110,20 +110,13 @@ def _eval_csp(contents: str) -> Tuple[int, list[str]]:
     """
     csp_unsafe: bool = False
     csp_notes: list = []
-
+    tmp_notes: list = []
     csp_parsed: dict = _csp_parser(contents)
 
     for rule, rule_list in UNSAFE_RULES.items():
         if rule not in csp_parsed:
-            if '-src' in rule and 'default-src' in csp_parsed:
-                # fallback to default-src
-                for unsafe_src in rule_list:
-                    if unsafe_src in csp_parsed['default-src']:
-                        csp_unsafe = True
-                        csp_notes.append(f"Directive {rule} not defined, and default-src contains unsafe source {unsafe_src}")
-            elif 'default-src' not in csp_parsed:
-                csp_notes.append(f"No directive {rule} nor default-src defined in the Content Security Policy")
-                csp_unsafe = True
+            csp_unsafe, tmp_notes = _rule_not_in_csp(rule, rule_list, csp_parsed, csp_unsafe)
+            csp_notes += tmp_notes
         else:
             for unsafe_src in rule_list:
                 if unsafe_src in csp_parsed[rule]:
@@ -134,6 +127,26 @@ def _eval_csp(contents: str) -> Tuple[int, list[str]]:
         return EVAL_WARN, csp_notes
 
     return EVAL_OK, []
+
+
+def _rule_not_in_csp(rule: str, rule_list: list, csp_parsed: dict, csp_unsafe: bool) -> Tuple[bool, list]:
+    unsafe: bool = False
+    notes: list = []
+
+    if '-src' in rule and 'default-src' in csp_parsed:
+        for unsafe_src in rule_list:
+            if unsafe_src in csp_parsed['default-src']:
+                unsafe = True
+                notes.append(f"Directive {rule} not defined, and default-src contains unsafe source {unsafe_src}")
+    elif 'default-src' not in csp_parsed:
+        notes.append(f"No directive {rule} nor default-src defined in the Content Security Policy")
+        unsafe = True
+
+    # If it is already set - force it to remain set
+    if csp_unsafe:
+        unsafe = True
+
+    return unsafe, notes
 
 
 def _csp_parser(contents: str) -> dict:

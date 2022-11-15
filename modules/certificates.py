@@ -21,46 +21,6 @@ from .notify import warn
 from .utils import remove_prefix
 
 
-def extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
-    """Define a summary.
-
-    This is the extended summary from the template and needs to be replaced.
-
-    Arguments:
-        _conn (_type_) -- _description_
-        ocsp_response (bytes) -- _description_
-        _other_data (_type_) -- _description_
-
-    Returns:
-        bool -- _description_
-    """
-    try:
-        ocsp_response: Any = ocsp.load_der_ocsp_response(ocsp_response)
-        ocsp_status: int = int(ocsp_response.response_status.value)
-
-        if ocsp_status != 0:
-            # This will return one of five errors, which means connecting
-            # to the OCSP Responder failed for one of the below reasons:
-            # MALFORMED_REQUEST = 1
-            # INTERNAL_ERROR = 2
-            # TRY_LATER = 3
-            # SIG_REQUIRED = 5
-            # UNAUTHORIZED = 6
-            ocsp_response = str(ocsp_response.response_status)
-            ocsp_response = ocsp_response.split(".")
-            results.ocsp_message = f"OCSP Request Error: {ocsp_response[1]}"
-
-        certificate_status: str = str(ocsp_response.certificate_status)
-        certificate_status = certificate_status.split(".")
-        results.ocsp_message = f"{certificate_status[1]}"
-
-    except ValueError as err:
-        results.ocsp_message = str(err)
-
-    # Always return True otherwise we cant retrieve and download the certs
-    return True
-
-
 def get_certificates() -> list:
     """Define a summary.
 
@@ -73,7 +33,7 @@ def get_certificates() -> list:
 
     sock: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     osobj: SSL.Context = SSL.Context(SSL.TLSv1_2_METHOD)
-    osobj.set_ocsp_client_callback(extract_ocsp_result)
+    osobj.set_ocsp_client_callback(_extract_ocsp_result)
 
     sock.connect((configuration.url.hostname, configuration.url.port))
 
@@ -115,6 +75,46 @@ def process_certificates(certificates: list) -> None:
         primary = False
 
     results.ssl_certs = decoded_certificates
+
+
+def _extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        _conn (_type_) -- _description_
+        ocsp_response (bytes) -- _description_
+        _other_data (_type_) -- _description_
+
+    Returns:
+        bool -- _description_
+    """
+    try:
+        ocsp_response: Any = ocsp.load_der_ocsp_response(ocsp_response)
+        ocsp_status: int = int(ocsp_response.response_status.value)
+
+        if ocsp_status != 0:
+            # This will return one of five errors, which means connecting
+            # to the OCSP Responder failed for one of the below reasons:
+            # MALFORMED_REQUEST = 1
+            # INTERNAL_ERROR = 2
+            # TRY_LATER = 3
+            # SIG_REQUIRED = 5
+            # UNAUTHORIZED = 6
+            ocsp_response = str(ocsp_response.response_status)
+            ocsp_response = ocsp_response.split(".")
+            results.ocsp_message = f"OCSP Request Error: {ocsp_response[1]}"
+
+        certificate_status: str = str(ocsp_response.certificate_status)
+        certificate_status = certificate_status.split(".")
+        results.ocsp_message = f"{certificate_status[1]}"
+
+    except ValueError as err:
+        results.ocsp_message = str(err)
+
+    # Always return True otherwise we cant retrieve and download the certs
+    return True
 
 
 def _get_certificate_info(cert, primary) -> dict:

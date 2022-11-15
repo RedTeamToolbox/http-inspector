@@ -38,5 +38,5 @@ def run_inspector(args: argparse.Namespace) -> None:
 
     port_scan()
 
-    print(json.dumps(results.cipher_suite, default=str, indent=4))
     print(json.dumps(results.port_scan, default=str, indent=4))
+    print(json.dumps(results.security_headers, default=str, indent=4))

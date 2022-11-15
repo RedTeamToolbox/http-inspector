@@ -42,7 +42,7 @@ def create_configuration_from_arguments(args: argparse.Namespace) -> None:
 
     # Check the url host actually exists
     try:
-        print(socket.gethostbyname(configuration.origin.hostname))
+        socket.gethostbyname(configuration.origin.hostname)
     except socket.gaierror as err:
         raise InvalidTargetURL("Unable to lookup address for URL") from err
 
