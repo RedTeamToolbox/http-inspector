@@ -9,15 +9,16 @@ line.
 import argparse
 import json
 
-from .certificates import get_certificates, process_certificates
-from .ciphers import get_cipher_suite
+from .certificates import process_certificates
+from .ciphers import process_cipher_suite
 from .config import create_configuration_from_arguments
+from .cli import process_command_line_arguments
 from .globals import global_results
-from .headers import fetch_headers
-from .portscan import port_scan
+from .headers import process_headers
+from .portscan import process_port_scan
 
 
-def run_inspector(args: argparse.Namespace) -> None:
+def core_run() -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -25,17 +26,13 @@ def run_inspector(args: argparse.Namespace) -> None:
     Arguments:
         args (argparse.Namespace) -- _description_
     """
-    # Process the command line arguments and create the global configuration
+    args: argparse.Namespace = process_command_line_arguments()
+
     create_configuration_from_arguments(args)
 
-    # From here we should have a valid URL to work with
-    fetch_headers()
+    process_headers()
+    process_certificates()
+    process_cipher_suite()
+    process_port_scan()
 
-    certificates: list = get_certificates()
-    process_certificates(certificates)
-
-    get_cipher_suite()
-
-    port_scan()
-
-    print(json.dumps(global_results.__dict__, default=str, indent=4))
+    print(json.dumps(vars(global_results), default=str, indent=4))

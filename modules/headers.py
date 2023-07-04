@@ -12,34 +12,34 @@ from typing import Tuple
 
 import requests
 
-from .constants import EVAL_FUNCTIONS, EVAL_OK, EVAL_WARN, HEADERS_LIST, HEADERS_RECOMMENDED, REQUEST_HEADERS, RESTRICTED_PRIVACY_POLICY_FEATURES, UNSAFE_RULES
+from .constants import EVAL_ISSUE, EVAL_FUNCTIONS, HEADERS_LIST, HEADERS_RECOMMENDED, REQUEST_HEADERS, RESTRICTED_FEATURES, UNSAFE_RULES
 from .globals import global_configuration, global_results
 
 
-def fetch_headers() -> None:
+def process_headers() -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
     """
-    resp: requests.Response
-    headers: list[dict[str, str]]
+    _fetch_headers()
+    _decode_headers()
 
-    # Without sending headers
-    # resp = requests.head(configuration.final_destination['url'], timeout=3)
-    # without_headers: list[dict[str, str]] = [{"name": key.lower(), "value": value} for key, value in resp.headers.items()]
 
-    # With sent headers
-    resp = requests.head(global_configuration.url.full_url, headers=REQUEST_HEADERS, timeout=global_configuration.timeout)
+def _fetch_headers() -> None:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
+    resp: requests.Response = requests.head(global_configuration.url.full_url, headers=REQUEST_HEADERS, timeout=global_configuration.timeout)
     headers: list[dict[str, str]] = [{"name": key.lower(), "value": value} for key, value in resp.headers.items()]
 
     headers = sorted(headers, key=lambda d: d["name"])
 
     global_results.raw_headers = headers
-    _check_headers()
     _add_documentation()
 
 
-def _check_headers() -> None:
+def _decode_headers() -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -47,34 +47,28 @@ def _check_headers() -> None:
     security_headers: dict = {}
     res: int
     notes: list
-    warn: bool
 
     for header in HEADERS_LIST:
-        if any(d['name'] == header for d in global_results.raw_headers):
-            if header in EVAL_FUNCTIONS:
-                eval_func: str = EVAL_FUNCTIONS[header]
-            else:
-                warn = HEADERS_RECOMMENDED.get(header, False)
-                security_headers[header] = {'defined': True, 'warn': warn, 'contents': None, 'notes': ["Eval function is missing"]}
-                continue
+        recommended: bool = HEADERS_RECOMMENDED.get(header, False)
+        # Is the header we are interested in in the raw headers?
+        if not any(d["name"] == header for d in global_results.raw_headers):
+            security_headers[header] = {"raw-header": False, "recommended": recommended, "issue": recommended, "contents": None, "notes": []}
+            continue
 
-            header_str: str = ''.join([d['value'] for d in global_results.raw_headers if d['name'] == header])
-            try:
-                res, notes = globals()[eval_func](header_str)
-            except KeyError:
-                warn = HEADERS_RECOMMENDED.get(header, False)
-                security_headers[header] = {'defined': False, 'warn': warn, 'contents': header_str, 'notes': ["Eval function is missing"]}
-                continue
-
+        header_str: str = "".join([d["value"] for d in global_results.raw_headers if d["name"] == header])
+        try:
+            res, notes = globals()[EVAL_FUNCTIONS[header]](header_str)
+        except KeyError:
             security_headers[header] = {
-                'defined': True,
-                'warn': res == EVAL_WARN,
-                'contents': header_str,
-                'notes': notes
+                "raw-header": False,
+                "recommended": recommended,
+                "issue": recommended,
+                "contents": header_str,
+                "notes": ["Eval function is missing"]
             }
-        else:
-            warn = HEADERS_RECOMMENDED.get(header, False)
-            security_headers[header] = {'defined': False, 'warn': warn, 'contents': None, 'notes': []}
+            continue
+
+        security_headers[header] = {"raw-header": True, "recommended": recommended, "issue": res, "contents": header_str, "notes": notes}
 
     global_results.security_headers = security_headers
 
@@ -97,7 +91,7 @@ def _add_documentation() -> None:
             item.update({"documentation": f"https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/{name}"})
 
 
-def _eval_csp(contents: str) -> Tuple[int, list[str]]:
+def _eval_csp(contents: str) -> Tuple[bool, list[str]]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -124,9 +118,9 @@ def _eval_csp(contents: str) -> Tuple[int, list[str]]:
                     csp_unsafe = True
 
     if csp_unsafe:
-        return EVAL_WARN, csp_notes
+        return EVAL_ISSUE, csp_notes
 
-    return EVAL_OK, []
+    return not EVAL_ISSUE, []
 
 
 def _rule_not_in_csp(rule: str, rule_list: list, csp_parsed: dict, csp_unsafe: bool) -> Tuple[bool, list]:
@@ -172,7 +166,7 @@ def _csp_parser(contents: str) -> dict:
     return csp
 
 
-def _eval_permissions_policy(contents: str) -> Tuple[int, list]:
+def _eval_permissions_policy(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -190,18 +184,18 @@ def _eval_permissions_policy(contents: str) -> Tuple[int, list]:
     notes: list[str] = []
     pp_unsafe: bool = False
 
-    for feature in RESTRICTED_PRIVACY_POLICY_FEATURES:
+    for feature in RESTRICTED_FEATURES:
         if feature not in pp_parsed or "*" in pp_parsed.get(feature, []):
             pp_unsafe = True
             notes.append(f"Privacy-sensitive feature '{feature}' is not restricted to specific origins.")
 
     if pp_unsafe:
-        return EVAL_WARN, notes
+        return EVAL_ISSUE, notes
 
-    return EVAL_OK, []
+    return not EVAL_ISSUE, []
 
 
-def _eval_pragma(contents: str) -> Tuple[int, list]:
+def _eval_pragma(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -213,9 +207,9 @@ def _eval_pragma(contents: str) -> Tuple[int, list]:
         Tuple[int, list] -- _description_
     """
     if contents is not None:
-        return EVAL_WARN, ["Deprecated: This feature is no longer recommended."]
+        return EVAL_ISSUE, ["Deprecated: This feature is no longer recommended."]
 
-    return EVAL_OK, []
+    return not EVAL_ISSUE, []
 
 
 def _permissions_policy_parser(contents: str) -> dict:
@@ -242,7 +236,7 @@ def _permissions_policy_parser(contents: str) -> dict:
     return retval
 
 
-def _eval_referrer_policy(contents: str) -> Tuple[int, list]:
+def _eval_referrer_policy(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -261,12 +255,12 @@ def _eval_referrer_policy(contents: str) -> Tuple[int, list]:
         'strict-origin',
         'strict-origin-when-cross-origin',
     ]:
-        return EVAL_OK, []
+        return not EVAL_ISSUE, []
 
-    return EVAL_WARN, [f"Unsafe or non-recommended: {contents}"]
+    return EVAL_ISSUE, [f"Unsafe or non-recommended: {contents}"]
 
 
-def _eval_version_info(contents: str) -> Tuple[int, list]:
+def _eval_version_info(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -279,12 +273,12 @@ def _eval_version_info(contents: str) -> Tuple[int, list]:
     """
     # Poor guess whether the header value contain something that could be a server banner including version number
     if len(contents) > 3 and re.match(".*\\d+.*\\d.*", contents):
-        return EVAL_WARN, []
+        return EVAL_ISSUE, []
 
-    return EVAL_OK, []
+    return not EVAL_ISSUE, []
 
 
-def _eval_sts(contents: str) -> Tuple[int, list[str]]:
+def _eval_sts(contents: str) -> Tuple[bool, list[str]]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -296,12 +290,12 @@ def _eval_sts(contents: str) -> Tuple[int, list[str]]:
         Tuple[int, list[str]] -- _description_
     """
     if re.match("^max-age=\\d+\\s*(;|$)\\s*", contents.lower()):
-        return EVAL_OK, []
+        return not EVAL_ISSUE, []
 
-    return EVAL_WARN, []
+    return EVAL_ISSUE, []
 
 
-def _eval_content_type_options(contents: str) -> Tuple[int, list]:
+def _eval_content_type_options(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -313,12 +307,12 @@ def _eval_content_type_options(contents: str) -> Tuple[int, list]:
         Tuple[int, list] -- _description_
     """
     if contents.lower() == 'nosniff':
-        return EVAL_OK, []
+        return not EVAL_ISSUE, []
 
-    return EVAL_WARN, []
+    return EVAL_ISSUE, []
 
 
-def _eval_x_frame_options(contents: str) -> Tuple[int, list[str]]:
+def _eval_x_frame_options(contents: str) -> Tuple[bool, list[str]]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -330,12 +324,12 @@ def _eval_x_frame_options(contents: str) -> Tuple[int, list[str]]:
         Tuple[int, list[str]] -- _description_
     """
     if contents.lower() in ['deny', 'sameorigin']:
-        return EVAL_OK, []
+        return not EVAL_ISSUE, []
 
-    return EVAL_WARN, []
+    return EVAL_ISSUE, []
 
 
-def _eval_x_xss_protection(contents: str) -> Tuple[int, list]:
+def _eval_x_xss_protection(contents: str) -> Tuple[bool, list]:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -351,6 +345,6 @@ def _eval_x_xss_protection(contents: str) -> Tuple[int, list]:
     # value '1' is dangerous because it can be used to block legit site features. If this header is defined, either
     # one of the below values if recommended
     if contents.lower() in ['1; mode=block', '0']:
-        return EVAL_OK, []
+        return not EVAL_ISSUE, []
 
-    return EVAL_WARN, []
+    return EVAL_ISSUE, []

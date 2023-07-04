@@ -9,6 +9,8 @@ line.
 import argparse
 import sys
 
+from .constants import ARG_PARSER_DESCRIPTION, ARG_PARSER_EPILOG
+
 
 def _add_flags_to_parser(parser: argparse.ArgumentParser) -> None:
     """Define a summary.
@@ -40,6 +42,10 @@ def _add_flags_to_parser(parser: argparse.ArgumentParser) -> None:
     flags.add_argument("-A", "--all-results",
                        action="store_true", default=False,
                        help="Show or save all results (default is to list open ports only)")
+    flags.add_argument("-n", "--no-check-certificate",
+                       action="store_true", default=False,
+                       help="Do not verify TLS chain")
+
     flags.add_argument("-s", "--shuffle",
                        action="store_true", default=False,
                        help="Randomise the port scanning order")
@@ -80,9 +86,6 @@ def _add_optional_parameters(parser: argparse.ArgumentParser) -> None:
     required.add_argument("-m", "--max-redirects",
                           type=int, default=2,
                           help="Max redirects, set 0 to disable")
-    required.add_argument("-n", "--no-check-certificate",
-                          action="store_true", default=False,
-                          help="Do not verify TLS chain")
     required.add_argument("-t", "--timeout",
                           type=int, default=5,
                           help="Timeout to use when making web requests")
@@ -101,8 +104,8 @@ def _setup_arg_parser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         add_help=False,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="Check for open port(s) on target host(s)",
-        epilog="For detailed documentation please refer to: https://github.com/OffSecToolbox/http-inspector",
+        description=ARG_PARSER_DESCRIPTION,
+        epilog=ARG_PARSER_EPILOG,
     )
     _add_flags_to_parser(parser)
     _add_required_parameters(parser)

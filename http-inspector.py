@@ -9,11 +9,9 @@ you can elaborate further on details as appropriate for the situation.
 Notice that the summary and the elaboration is separated by a blank new
 line.
 """
-import argparse
 import sys
 
-from modules.cli import process_command_line_arguments
-from modules.core import run_inspector
+from modules.core import core_run
 from modules.exceptions import InvalidParameters, InvalidTargetURL
 from modules.notify import error, info
 
@@ -23,8 +21,7 @@ def main() -> None:
 
     It does stuff.
     """
-    args: argparse.Namespace = process_command_line_arguments()
-    run_inspector(args)
+    core_run()
     sys.exit(0)
 
 

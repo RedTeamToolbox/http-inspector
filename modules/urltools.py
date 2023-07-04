@@ -92,6 +92,7 @@ def follow_redirects(url: str) -> list:
     if global_configuration.max_redirects:
         session.max_redirects = global_configuration.max_redirects
 
+    # TODO: requests.get('http://127.0.0.1/foo.php', headers={'host': 'example.com'})
     try:
         resp: requests.Response = session.get(
             url, headers=REQUEST_HEADERS,
@@ -103,9 +104,9 @@ def follow_redirects(url: str) -> list:
     except requests.exceptions.TooManyRedirects as err:
         raise InvalidTargetURL("To many redirects - aborting") from err
     except requests.exceptions.HTTPError as err:
-        raise InvalidTargetURL("Error with Web site") from err
+        raise InvalidTargetURL(f"Error with web site {err}") from err
     except requests.exceptions.ConnectionError as err:
-        raise InvalidTargetURL("No web server there") from err
+        raise InvalidTargetURL(f"No web server there {err}") from err
 
     if resp.history:
         for hist in resp.history:

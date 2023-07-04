@@ -20,7 +20,7 @@ from .globals import global_configuration, global_results
 from .notify import warn
 
 
-def get_cipher_suite() -> None:
+def process_cipher_suite() -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.

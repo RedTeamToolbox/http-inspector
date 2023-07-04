@@ -16,20 +16,18 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from .constants import PORTSCAN_PORTS
-from .dns import get_records
 from .globals import global_configuration, global_results
 from .ordering import multikeysort, shuffled
 
 
-def port_scan() -> None:
+def process_port_scan() -> None:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
     """
     scan_results: list[dict] = []
 
-    ip_list: list = _get_ips(global_configuration.url.hostname)
-    all_ports_and_ips: list[tuple[str, int]] = list(itertools.product(ip_list, PORTSCAN_PORTS))
+    all_ports_and_ips: list[tuple[str, int]] = list(itertools.product(global_configuration.ips.addresses, PORTSCAN_PORTS))
     if global_configuration.shuffle is True:
         all_ports_and_ips = shuffled(all_ports_and_ips)
 
@@ -80,51 +78,6 @@ def _calculate_default_threads() -> int:
         default_threads = len(PORTSCAN_PORTS)
 
     return default_threads
-
-
-def _is_ip_address(target: str) -> Any:
-    """Define a summary.
-
-    This is the extended summary from the template and needs to be replaced.
-
-    Arguments:
-        target (str) -- _description_
-
-    Returns:
-        Any -- _description_
-    """
-    try:
-        ip_address: ipaddress.IPv4Address | ipaddress.IPv6Address = ipaddress.ip_address(target)
-        status: bool = bool(isinstance(ip_address, (ipaddress.IPv4Address, ipaddress.IPv6Address)))
-    except ValueError:
-        status = False
-    return status
-
-
-def _get_ips(target: str) -> list[str]:
-    """Define a summary.
-
-    This is the extended summary from the template and needs to be replaced.
-
-    Arguments:
-        target (str) -- _description_
-
-    Returns:
-        list[str] -- _description_
-    """
-    ip_list: list[str] = []
-
-    if _is_ip_address(target) is False:
-        if global_configuration.ipv4_only is True:
-            ip_list = sorted(get_records(target, "A"))
-        elif global_configuration.ipv6_only is True:
-            ip_list = sorted(get_records(target, "AAAA"))
-        else:
-            ip_list = sorted(get_records(target, "A")) + sorted(get_records(target, "AAAA"))
-    else:
-        ip_list.append(target)
-
-    return ip_list
 
 
 def _scan_target_port(target: str, port: int, socket_timeout: int = 3) -> dict[str, Any]:

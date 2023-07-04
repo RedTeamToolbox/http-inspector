@@ -1,28 +1,28 @@
 <p align="center">
-    <a href="https://github.com/OffSecToolbox/">
-        <img src="https://cdn.wolfsoftware.com/assets/images/github/organisations/offsectoolbox/black-and-white-circle-256.png" alt="OffSecToolbox logo" />
+    <a href="https://github.com/RedTeamToolbox/">
+        <img src="https://cdn.wolfsoftware.com/assets/images/github/organisations/redteamtoolbox/black-and-white-circle-256.png" alt="RedTeamToolbox logo" />
     </a>
     <br />
-    <a href="https://github.com/OffSecToolbox/http-inspector/actions/workflows/cicd-pipeline-shared.yml">
-        <img src="https://img.shields.io/github/workflow/status/OffSecToolbox/http-inspector/CICD%20Pipeline%20(Shared)/master?label=shared%20pipeline&style=for-the-badge" alt="Github Build Status" />
+    <a href="https://github.com/RedTeamToolbox/http-inspector/actions/workflows/cicd-pipeline-shared.yml">
+        <img src="https://img.shields.io/github/workflow/status/RedTeamToolbox/http-inspector/CICD%20Pipeline%20(Shared)/master?label=shared%20pipeline&style=for-the-badge" alt="Github Build Status" />
     </a>
-    <a href="https://github.com/OffSecToolbox/http-inspector/actions/workflows/cicd-pipeline-custom.yml">
-        <img src="https://img.shields.io/github/workflow/status/OffSecToolbox/http-inspector/CICD%20Pipeline%20(Custom)/master?label=custom%20pipeline&style=for-the-badge" alt="Github Build Status" />
+    <a href="https://github.com/RedTeamToolbox/http-inspector/actions/workflows/cicd-pipeline-custom.yml">
+        <img src="https://img.shields.io/github/workflow/status/RedTeamToolbox/http-inspector/CICD%20Pipeline%20(Custom)/master?label=custom%20pipeline&style=for-the-badge" alt="Github Build Status" />
     </a>
-    <a href="https://codecov.io/gh/OffSecToolbox/http-inspector">
-        <img src="https://img.shields.io/codecov/c/gh/OffSecToolbox/http-inspector?label=code%20coverage&style=for-the-badge" alt="code coverage" />
+    <a href="https://codecov.io/gh/RedTeamToolbox/http-inspector">
+        <img src="https://img.shields.io/codecov/c/gh/RedTeamToolbox/http-inspector?label=code%20coverage&style=for-the-badge" alt="code coverage" />
     </a>
     <br />
-    <a href="https://github.com/OffSecToolbox/http-inspector/blob/master/.github/CODE_OF_CONDUCT.md">
+    <a href="https://github.com/RedTeamToolbox/http-inspector/blob/master/.github/CODE_OF_CONDUCT.md">
         <img src="https://img.shields.io/badge/Code%20of%20Conduct-blue?style=for-the-badge" />
     </a>
-    <a href="https://github.com/OffSecToolbox/http-inspector/blob/master/.github/CONTRIBUTING.md">
+    <a href="https://github.com/RedTeamToolbox/http-inspector/blob/master/.github/CONTRIBUTING.md">
         <img src="https://img.shields.io/badge/Contributing-blue?style=for-the-badge" />
     </a>
-    <a href="https://github.com/OffSecToolbox/http-inspector/blob/master/.github/SECURITY.md">
+    <a href="https://github.com/RedTeamToolbox/http-inspector/blob/master/.github/SECURITY.md">
         <img src="https://img.shields.io/badge/Report%20Security%20Concern-blue?style=for-the-badge" />
     </a>
-    <a href="https://github.com/OffSecToolbox/http-inspector/issues">
+    <a href="https://github.com/RedTeamToolbox/http-inspector/issues">
         <img src="https://img.shields.io/badge/Get%20Support-blue?style=for-the-badge" />
     </a>
 </p>
@@ -60,7 +60,7 @@ optional arguments:
   -t TIMEOUT, --timeout TIMEOUT
                         Timeout to use when making web requests (default: 5)
 
-For detailed documentation please refer to: https://github.com/OffSecToolbox/http-inspector
+For detailed documentation please refer to: https://github.com/RedTeamToolbox/http-inspector
 ```
 
 <br />

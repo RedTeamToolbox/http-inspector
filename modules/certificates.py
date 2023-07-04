@@ -6,6 +6,7 @@ you can elaborate further on details as appropriate for the situation.
 Notice that the summary and the elaboration is separated by a blank new
 line.
 """
+import ipaddress
 import socket
 
 from datetime import datetime
@@ -21,7 +22,22 @@ from .notify import warn
 from .utils import remove_prefix
 
 
-def get_certificates() -> list:
+def process_certificates() -> None:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+    """
+    raw_certificates: list = []
+    decoded_certificates: dict = {}
+
+    for ipaddr in global_results.ips.addresses:
+        raw_certificates = _get_certificates(ipaddr)
+        decoded_certificates[ipaddr] = _decode_certificates(raw_certificates)
+
+    global_results.ssl_certs = decoded_certificates
+
+
+def _get_certificates(target: str) -> list:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
@@ -31,50 +47,59 @@ def get_certificates() -> list:
     """
     cert_chain: list = []
 
-    sock: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    osobj: SSL.Context = SSL.Context(SSL.TLSv1_2_METHOD)
-    osobj.set_ocsp_client_callback(_extract_ocsp_result)
+    af_type: int = socket.AF_INET
 
-    sock.connect((global_configuration.url.hostname, global_configuration.url.port))
+    if isinstance(ipaddress.ip_address(target), ipaddress.IPv6Address) is True:
+        af_type = socket.AF_INET6
+
+    sock: socket.socket = socket.socket(af_type, socket.SOCK_STREAM)
+    ssl_obj: SSL.Context = SSL.Context(SSL.TLSv1_2_METHOD)
+    ssl_obj.set_ocsp_client_callback(_extract_ocsp_result)
+    if global_configuration.verify_ssl:
+        ssl_obj.set_verify(SSL.VERIFY_PEER | SSL.VERIFY_FAIL_IF_NO_PEER_CERT | SSL.VERIFY_CLIENT_ONCE, _verify_ssl)
+    else:
+        ssl_obj.set_verify(SSL.VERIFY_NONE)
 
     try:
-        oscon: SSL.Connection = SSL.Connection(osobj, sock)
-        oscon.set_tlsext_host_name(global_configuration.url.hostname.encode())
-        oscon.request_ocsp()
-        oscon.set_connect_state()
-        oscon.do_handshake()
+        sock.connect((target, global_configuration.url.port))
+        ssl_conn: SSL.Connection = SSL.Connection(ssl_obj, sock)
+        ssl_conn.set_tlsext_host_name(global_configuration.url.hostname.encode())
+        ssl_conn.request_ocsp()
+        ssl_conn.set_connect_state()
+        ssl_conn.do_handshake()
         # get_cipher_list
         # get_cipher_name
         # get_cipher_bits
         # get_cipher_version
         # get_protocol_version_name
-        cert_chain = oscon.get_verified_chain()
-        oscon.shutdown()
-    except SSL.Error:
-        warn("Unable to retrieve SSL certificates - check your url and rerun if this is unexpected")
+        cert_chain = ssl_conn.get_verified_chain()
+        ssl_conn.shutdown()
+    except SSL.Error as err:
+        warn(f"Unable to retrieve SSL certificates from {target} {err}")
+    except OSError as err:
+        warn(f"Unable to retrieve SSL certificates from {target} {err}")
 
     return cert_chain
 
 
-def process_certificates(certificates: list) -> None:
+def _verify_ssl(_conn, _cert, errno, depth, _result) -> bool:
     """Define a summary.
 
     This is the extended summary from the template and needs to be replaced.
 
     Arguments:
-        certificates (list) -- _description_
-    """
-    decoded_certificates: list = []
-    primary: bool = True
-    for cert in certificates:
-        details: dict = _get_certificate_info(cert, primary)
-        if primary:
-            details['revocation'] = global_results.ocsp_message
-            del global_results.ocsp_message
-        decoded_certificates.append(details)
-        primary = False
+        _conn (_type_) -- _description_
+        _cert (_type_) -- _description_
+        errno (_type_) -- _description_
+        depth (_type_) -- _description_
+        _result (_type_) -- _description_
 
-    global_results.ssl_certs = decoded_certificates
+    Returns:
+        bool -- _description_
+    """
+    if depth == 0 and (errno == 9 or errno == 10):
+        return False  # or raise Exception("Certificate not yet valid or expired")
+    return True
 
 
 def _extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
@@ -115,6 +140,28 @@ def _extract_ocsp_result(_conn, ocsp_response: bytes, _other_data) -> bool:
 
     # Always return True otherwise we cant retrieve and download the certs
     return True
+
+
+def _decode_certificates(certificates: list) -> list:
+    """Define a summary.
+
+    This is the extended summary from the template and needs to be replaced.
+
+    Arguments:
+        certificates (list) -- _description_
+    """
+    decoded_certificates: list = []
+    primary: bool = True
+
+    for cert in certificates:
+        details: dict = _get_certificate_info(cert, primary)
+        if primary:
+            details['revocation_status'] = global_results.ocsp_message
+            del global_results.ocsp_message
+        decoded_certificates.append(details)
+        primary = False
+
+    return decoded_certificates
 
 
 def _get_certificate_info(cert, primary) -> dict:

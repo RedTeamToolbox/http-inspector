@@ -26,6 +26,9 @@ WARN: str = colorama.Fore.YELLOW
 ERROR: str = colorama.Fore.RED
 INFO: str = colorama.Fore.CYAN
 
+ARG_PARSER_DESCRIPTION: str = "Check for open port(s) on target host(s)"
+ARG_PARSER_EPILOG: str = "For detailed documentation please refer to: https://github.com/OffSecToolbox/http-inspector"
+
 CERTIFICATE_TIME_FORMAT: str = "%Y-%m-%d %X"
 
 PORTSCAN_PORTS: list = [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 445, 465, 587, 993, 995, 1723, 3306, 3389, 5900, 8080, 8443]
@@ -39,8 +42,7 @@ REQUEST_HEADERS: dict[str, str] = {
 }
 
 DEFAULT_URL_SCHEME: str = "https"
-EVAL_WARN: int = 0
-EVAL_OK: int = 1
+EVAL_ISSUE: bool = True
 
 HEADERS_LIST: list[str] = [
     "content-security-policy",
@@ -81,7 +83,7 @@ EVAL_FUNCTIONS: dict[str, str] = {
     "x-xss-protection": "_eval_x_xss_protection",
 }
 
-RESTRICTED_PRIVACY_POLICY_FEATURES: list[str] = [
+RESTRICTED_FEATURES: list[str] = [
     'accelerometer',
     'autoplay',
     'camera',

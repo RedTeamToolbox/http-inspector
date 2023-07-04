@@ -14,4 +14,6 @@ from secrets import SystemRandom
 secrets_generator: SystemRandom = SystemRandom()
 
 global_configuration: SimpleNamespace = SimpleNamespace()
+
+# Should this be a dict ? so json dumping is easier
 global_results: SimpleNamespace = SimpleNamespace()
