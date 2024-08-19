@@ -1,5 +1,5 @@
 colorama==0.4.5
-cryptography==41.0.4
+cryptography==42.0.4
 defusedxml==0.7.1
 Faker==15.3.1
 pyOpenSSL==23.2.0
