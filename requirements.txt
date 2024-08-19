@@ -3,5 +3,5 @@ cryptography==41.0.4
 defusedxml==0.7.1
 Faker==15.3.1
 pyOpenSSL==23.2.0
-requests==2.28.1
+requests==2.32.2
 tldextract==3.4.0
